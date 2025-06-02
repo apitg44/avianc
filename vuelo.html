@@ -1,634 +1,452 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Selección de Vuelos</title>
+    <title>Vuelos</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
-        }
 
-        header {
-            background-color: #1B1B1B;
-            color: white;
-            padding: 4%;
-            display: flex;
-            justify-content: center;
-            position: relative;
-        }
-
-        .promo-card {
-            border: 2px solid #34c759;
-            border-radius: 10px;
-            padding: 20px;
-            max-width: 400px;
-            background-color: #fff;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            margin: 5%;
-        }
-
-        .promo-card p {
-            margin: 0;
-            font-size: 14px;
-            color: #333;
-            line-height: 1.5;
-        }
-
-        .flight-info {
-            padding: 4%;
-        }
-
-        .flight-route {
-            display: flex;
-            margin-top: 2%;
-            margin-bottom: 4%;
-            align-items: center;
-        }
-
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background: #f1f1f1;
-            border: 1px solid #ddd;
-            border-radius: 5px 5px 0 0;
-            margin: 0 2px;
-        }
-
-        .tab.active {
-            background: #34c759;
-            color: white;
-            border-color: #34c759;
-        }
-
-        .flight-card {
-            border: 1px solid #e0e0e085;
-            border-radius: 30px;
-            padding: 30px;
-            padding-bottom: 1px;
-            margin: 5%;
-            margin-top: 0;
-            max-width: 350px;
-            background: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .flight-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .flight-times {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .time {
-            text-align: center;
-        }
-
-        .time span {
-            display: block;
-            font-size: 16px;
-            color: #333;
-        }
-
-        .duration {
-            text-align: center;
-        }
-
-        .duration .direct {
-            font-size: 14px;
-            color: #00a86b;
-            font-weight: bold;
-        }
-
-        .duration .time {
-            font-size: 12px;
-            color: #888;
-        }
-
-        .operator {
-            text-align: center;
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 20px;
-        }
-
-        .price {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .price-display {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 4%;
-        }
-
-        .currency {
-            margin-right: 2%;
-            font-weight: bold;
-        }
-
-        .amount {
-            font-size: 2rem;
-            color: #000;
-            font-weight: bold;
-        }
-
-        .flight-cards-container {
-            display: flex;
-            justify-content: center;
-            flex-direction: column;
-            width: 90%;
-            max-width: 600px;
-        }
-
-        .container {
-            display: flex;
-            justify-content: center;
-        }
-
-        .loader {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #34c759;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-            display: none;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .sort-controls {
-            display: flex;
-            justify-content: center;
-            margin: 10px 5%;
-            gap: 10px;
-        }
-
-        .sort-button {
-            padding: 8px 15px;
-            background-color: #f1f1f1;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.2s;
-        }
-
-        .sort-button:hover {
-            background-color: #e0e0e0;
-        }
-
-        .sort-button.active {
-            background-color: #34c759;
-            color: white;
-            border-color: #34c759;
-        }
-
-        .toggle-currency {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 5px 10px;
-            background-color: #f1f1f1;
-            border: 1px solid #ddd;
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .trip-type {
-            display: none;
-        }
-
-        .trip-type.active {
-            display: block;
-        }
-
-        .lifemiles-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #34c759;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-weight: bold;
-        }
-    </style>
 </head>
-<body onload="inicializar()">
-    <header>
-        <h4 style="margin: 0;">Selección de vuelos</h4>
-        <button class="toggle-currency" onclick="toggleCurrency()">
-            <span id="currencyIndicator">CLP/USD</span>
-        </button>
-    </header>
+<body>
+
+  <header style="background-color: #1B1B1B; color: white; padding: 4%; display: flex; justify-content: center;">
+    <h4 style="margin: 0;">Selección de vuelos</h4>
+  </header>
     
+  <div class="promo-card">
+    <div class="">
+      <img style="border-radius: 100px;" src="img/lm.jpeg" alt="">
+    </div>
+    <p style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1rem; line-height: 1.2; text-align: justify;">
+      Por favor, tenga en cuenta que los vuelos promocionales no incluyen la posibilidad de seleccionar asientos..
+  </p>
   
-    <!-- Promotion Card - Changes based on tab -->
-    <div id="promo-ida" class="promo-card trip-type active">
-        <div>
-            <i class="fa-solid fa-tag" style="font-size: 24px; color: #34c759;"></i>
-        </div>
-        <p style="font-weight: bold; font-size: 1rem; line-height: 1.2; text-align: justify;">
-            Por favor, tenga en cuenta que los vuelos promocionales no incluyen la posibilidad de seleccionar asientos.
-        </p>
-    </div>
+  </div>
+  
+
+  <body onload="inicializar()">
     
-    <div id="promo-vuelta" class="promo-card trip-type">
-        <div class="lifemiles-logo">
-            <i class="fa-solid fa-plane" style="font-size: 20px;"></i>
+    <div style="padding: 4%;">
+      <p style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-weight: normal; font-size: 1.3rem; color: #252525;">Ida</p1>
+        <div style="display: flex; margin-top: 2%; margin-bottom: 4%; display: flex; align-items: center;"> 
+          <i class="fa-solid fa-plane-departure" style="margin-right: 3%; color: #000000;"></i>
+        <p style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 1.3rem; font-weight: bold;" id="origenPalabra"></p>
+        <span style="margin: 0 10px;"><p style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 1.3rem; font-weight: bold;">a</p></span>  <!-- Aquí agregamos el "a" con espacios -->
+        <p style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 1.3rem; font-weight: bold;" id="destinoPalabra"></p>
         </div>
-        <p style="font-weight: bold; font-size: 1rem; line-height: 1.2; text-align: justify;">
-            Aprovecha la oportunidad de sumar millas en tu viaje, 
-            compra la tarifa basic o light y acumula 3 lifemiles por cada USD.
-        </p>
     </div>
+
+   <div style="display: flex; justify-content: center;">
+    <div style="display: flex; justify-content: center; flex-direction: column; width: 90%;" id="flightCardsContainer">
+        <!-- Las tarjetas de vuelo serán actualizadas dinámicamente por JavaScript -->
+    </div>
+   </div>
     
-    <!-- Ida (Outbound) flights section -->
-    <div id="ida-section" class="trip-type active">
-        <div class="flight-info">
-            <p style="margin: 0; font-weight: normal; font-size: 1.3rem; color: #252525;">Vuelta</p>
-            <div class="flight-route"> 
-                <i class="fa-solid fa-plane-departure" style="margin-right: 3%; color: #000000;"></i>
-                <p style="margin: 0; font-size: 1.3rem; font-weight: bold;" id="origenIdaPalabra"></p>
-                <span style="margin: 0 10px;"><p style="margin: 0; font-size: 1.3rem; font-weight: bold;">a</p></span>
-                <p style="margin: 0; font-size: 1.3rem; font-weight: bold;" id="destinoIdaPalabra"></p>
-            </div>
-        </div>
+<style>
 
-        <div class="sort-controls">
-            <button class="sort-button active" onclick="sortFlights('time', 'ida')">Horario</button>
-            <button class="sort-button" onclick="sortFlights('duration', 'ida')">Duración</button>
-            <button class="sort-button" onclick="sortFlights('price', 'ida')">Precio</button>
-        </div>
-
-        <div class="loader" id="loading-ida"></div>
-
-        <div class="container">
-            <div class="flight-cards-container" id="idaFlightCardsContainer">
-                <!-- Flight cards will be dynamically inserted here -->
-            </div>
-        </div>
-    </div>
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
     
-    <!-- Vuelta (Return) flights section -->
-    <div id="vuelta-section" class="trip-type">
-        <div class="flight-info">
-            <p style="margin: 0; font-weight: normal; font-size: 1.3rem; color: #252525;">Vuelta</p>
-            <div class="flight-route"> 
-                <i class="fa-solid fa-plane-departure" style="margin-right: 3%; color: #000000;"></i>
-                <p style="margin: 0; font-size: 1.3rem; font-weight: bold;" id="origenVueltaPalabra"></p>
-                <span style="margin: 0 10px;"><p style="margin: 0; font-size: 1.3rem; font-weight: bold;">a</p></span>
-                <p style="margin: 0; font-size: 1.3rem; font-weight: bold;" id="destinoVueltaPalabra"></p>
-            </div>
-        </div>
+}
 
-        <div class="sort-controls">
-            <button class="sort-button active" onclick="sortFlights('time', 'vuelta')">Horario</button>
-            <button class="sort-button" onclick="sortFlights('duration', 'vuelta')">Duración</button>
-            <button class="sort-button" onclick="sortFlights('price', 'vuelta')">Precio</button>
-        </div>
+.promo-card {
+  border: 2px solid #34c759; /* Verde */
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 400px;
+  background-color: #fff;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 5%;
+}
 
-        <div class="loader" id="loading-vuelta"></div>
+.icon {
+  width: 40px;
+  height: 40px;
+  background-color: #000;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
 
-        <div class="container">
-            <div class="flight-cards-container" id="vueltaFlightCardsContainer">
-                <!-- Flight cards will be dynamically inserted here -->
-            </div>
-        </div>
-    </div>
+.promo-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+}
+    .flight-card {
+      border: 1px solid #e0e0e085;
+      border-radius: 30px;
+      padding: 30px;
+      padding-bottom: 1px;
+      margin: 5%;
+      margin-top: 0;
+      max-width: 350px;
+      background: #fff;
+      font-family: Arial, sans-serif;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .flight-times {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .time {
+      text-align: center;
+    }
+    
+    .time span {
+      display: block;
+      font-size: 16px;
+      color: #333;
+    }
+    
+    .location {
+      font-size: 14px;
+      color: #555;
+    }
+    
+    .duration {
+      text-align: center;
+    }
+    
+    .duration .direct {
+      font-size: 14px;
+      color: #00a86b;
+      font-weight: bold;
+    }
+    
+    .duration .time {
+      font-size: 12px;
+      color: #888;
+    }
+    
+    .operator {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+    
+    .operator-name {
+      font-size: 16px;
+      color: #e1007e;
+      font-weight: bold;
+    }
+    
+    .price {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .price span {
+      display: block;
+    }
+    
+    .currency {
+      font-size: 14px;
+      color: #888;
+    }
+    
+    .amount {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .tariff-conditions {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+      background: #f5f5f5;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .tariff-conditions:hover {
+      background: #e0e0e0;
+    }
 
-    <script>
-        // Global variables
-        let currentCurrency = 'CLP';
-        let idaFlights = [];
-        let vueltaFlights = [];
-        let currentIdaSortMethod = 'time';
-        let currentVueltaSortMethod = 'time';
-        const conversionRate = 850; // Example rate: 1 USD = 850 CLP
+    .cop-price {
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 4%;
+    }
 
-        function inicializar() {
-            // Show loading indicators
-            document.getElementById('loading-ida').style.display = 'block';
-            document.getElementById('loading-vuelta').style.display = 'block';
-            
-            // Display origin and destination
-            mostrarPalabras();
-            
-            // Generate flight data
-            generateFlightData();
-            
-            // Sort and display flights
-            sortFlights('time', 'ida');
-            sortFlights('time', 'vuelta');
-            
-            // Hide loading after a short delay to simulate API fetch
-            setTimeout(() => {
-                document.getElementById('loading-ida').style.display = 'none';
-                document.getElementById('loading-vuelta').style.display = 'none';
-            }, 800);
-        }
+    .cop-symbol {
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #666;
+    }
 
-        function mostrarPalabras() {
-            // Get origin and destination from localStorage or use defaults
-            const origenTexto = localStorage.getItem("origenBuscar") || "Santiago";
-            const destinoTexto = localStorage.getItem("destinoBuscar") || "Concepción";
+    .cop-amount {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #000;
+    }
+    </style>
 
-            // Set for Ida (outbound)
-            document.getElementById("origenIdaPalabra").textContent = ` ${origenTexto}`;
-            document.getElementById("destinoIdaPalabra").textContent = ` ${destinoTexto}`;
-            
-            // Set for Vuelta (return) - swap origin and destination
-            document.getElementById("origenVueltaPalabra").textContent = ` ${destinoTexto}`;
-            document.getElementById("destinoVueltaPalabra").textContent = ` ${origenTexto}`;
-            
-            return { origen: origenTexto, destino: destinoTexto };
-        }
-
-        function generateFlightData() {
-            const { origen, destino } = mostrarPalabras();
-            
-            // Define flight durations based on common routes in Chile (in minutes)
-            const duracionesRutas = {
-                "SantiagoConepción": 70,     // 1h 10m
-                "SantiagoPuerto Montt": 105, // 1h 45m
-                "SantiagoAntofagasta": 120,  // 2h
-                "SantiagoLa Serena": 60,     // 1h
-                "SantiagoArica": 150,        // 2h 30m
-                "ConcepciónSantiago": 70,    // 1h 10m
-                "ValparaísoSantiago": 45,    // 45m
-                "PuntaArenasSantiago": 210,  // 3h 30m
-                "default": 90                // Default 1h 30m
-            };
-            
-            // Determine flight duration based on origin and destination
-            const rutaClaveIda = `${origen}${destino}`;
-            const baseDurationIda = duracionesRutas[rutaClaveIda] || duracionesRutas.default;
-            
-            const rutaClaveVuelta = `${destino}${origen}`;
-            const baseDurationVuelta = duracionesRutas[rutaClaveVuelta] || duracionesRutas.default;
-            
-            // Get current date/time
-            const now = new Date();
-            const baseTimeIda = new Date(now);
-            baseTimeIda.setMinutes(baseTimeIda.getMinutes() + 40); // First flight in 40 minutes
-            
-            const baseTimeVuelta = new Date(now);
-            baseTimeVuelta.setDate(baseTimeVuelta.getDate() + 2); // Return flights 2 days later
-            
-            // Clear previous flight data
-            idaFlights = [];
-            vueltaFlights = [];
-            
-            // Generate outbound flights
-            for (let i = 0; i < 8; i++) {
-                // Calculate departure time with some variations
-                const departureTime = new Date(baseTimeIda);
-                departureTime.setHours(departureTime.getHours() + i * 2 + Math.floor(Math.random() * 2));
-                
-                // Add some variation to flight duration
-                const durationVariation = Math.floor(Math.random() * 40) - 10; // -10 to +30 minutes
-                const actualDuration = baseDurationIda + durationVariation;
-                
-                // Calculate arrival time
-                const arrivalTime = new Date(departureTime);
-                arrivalTime.setMinutes(arrivalTime.getMinutes() + actualDuration);
-                
-                // Price calculation with Chilean prices
-                const basePriceCLP = Math.round(22000 + Math.floor(Math.random() * 5000));
-                const priceUSD = (basePriceCLP / conversionRate).toFixed(2);
-                
-                // Randomly assign operator for some flights
-                const hasOperator = Math.random() > 0.7;
-                const operator = hasOperator ? "JetSur" : null;
-                
-                // Create flight object
-                const flight = {
-                    id: i + 1,
-                    departureTime: departureTime,
-                    arrivalTime: arrivalTime,
-                    duration: actualDuration,
-                    priceCLP: basePriceCLP,
-                    priceUSD: priceUSD,
-                    operator: operator
-                };
-                
-                idaFlights.push(flight);
-            }
-            
-            // Generate return flights
-            for (let i = 0; i < 8; i++) {
-                // Calculate departure time with some variations
-                const departureTime = new Date(baseTimeVuelta);
-                departureTime.setHours(departureTime.getHours() + i * 3 + Math.floor(Math.random() * 2));
-                
-                // Add some variation to flight duration
-                const durationVariation = Math.floor(Math.random() * 50) - 15; // -15 to +35 minutes
-                const actualDuration = baseDurationVuelta + durationVariation;
-                
-                // Calculate arrival time
-                const arrivalTime = new Date(departureTime);
-                arrivalTime.setMinutes(arrivalTime.getMinutes() + actualDuration);
-                
-                // Price calculation with Chilean prices
-                const basePriceCLP = Math.round(20000 + Math.floor(Math.random() * 5000));
-                const priceUSD = (basePriceCLP / conversionRate).toFixed(2);
-                
-                // Randomly assign operator for some flights
-                const hasOperator = Math.random() > 0.6;
-                const operator = hasOperator ? "JetSur" : null;
-                
-                // Create flight object
-                const flight = {
-                    id: i + 1,
-                    departureTime: departureTime,
-                    arrivalTime: arrivalTime,
-                    duration: actualDuration,
-                    priceCLP: basePriceCLP,
-                    priceUSD: priceUSD,
-                    operator: operator
-                };
-                
-                vueltaFlights.push(flight);
-            }
-        }
+<script>
+    function inicializar() {
+        // Mostrar origen y destino
+        mostrarPalabras();
         
-        function formatTime(date) {
-            // Format time as 12-hour with AM/PM
-            let hours = date.getHours();
-            const minutes = date.getMinutes().toString().padStart(2, '0');
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            
-            hours = hours % 12;
-            hours = hours ? hours : 12; // Convert '0' to '12' in 12-hour format
-            
-            return `${hours}:${minutes} ${ampm}`;
-        }
+        // Actualizar horarios de vuelos
+        actualizarHorariosVuelos();
+    }
+
+    function mostrarPalabras() {
+        // Obtener origen y destino del localStorage, si no hay valores, usar ciudades colombianas
+        const origenTexto = localStorage.getItem("origenBuscar") || "Bogotá";
+        const destinoTexto = localStorage.getItem("destinoBuscar") || "Medellín";
+
+        document.getElementById("origenPalabra").textContent = ` ${origenTexto}`;
+        document.getElementById("destinoPalabra").textContent = `${destinoTexto}`;
         
-        function formatDuration(minutes) {
-            const hours = Math.floor(minutes / 60);
-            const mins = minutes % 60;
-            return `${hours}h ${mins}m`;
-        }
+        return { origen: origenTexto, destino: destinoTexto };
+    }
+
+    function formatearPrecioCOP(precio) {
+        // Convertir número a string con separadores de miles
+        return precio.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function actualizarHorariosVuelos() {
+        const { origen, destino } = mostrarPalabras();
         
-        function createFlightCard(flight, tripType) {
-            const card = document.createElement('div');
-            card.className = 'flight-card';
-            card.setAttribute('data-flight-id', flight.id);
+        // Definir las duraciones de vuelo según rutas nacionales de Colombia (en minutos)
+        // MÍNIMO 40 MINUTOS para todas las rutas
+        const duracionesRutas = {
+            // Desde Bogotá
+            "BogotáMedellín": 75,         // 1h 15m
+            "BogotáCali": 70,             // 1h 10m
+            "BogotáBarranquilla": 85,     // 1h 25m
+            "BogotáCartagena": 80,        // 1h 20m
+            "BogotáBucaramanga": 60,      // 1h
+            "BogotáPereira": 55,          // 55m
+            "BogotáSanta Marta": 90,      // 1h 30m
+            "BogotáCúcuta": 65,           // 1h 05m
+            "BogotáIbagué": 45,           // 45m
+            "BogotáNeiva": 50,            // 50m
+            "BogotáPasto": 95,            // 1h 35m
+            "BogotáVillavicencio": 40,    // 40m
+            "BogotáMonteríaa": 75,        // 1h 15m
+            "BogotáArmenia": 50,          // 50m
+            "BogotáManizales": 55,        // 55m
             
-            // Set destination page based on trip type
-            const destinationPage = tripType === 'ida' ? 'tarifa2.html' : 'dat.html';
-            card.onclick = function() { window.location.href = destinationPage; };
+            // Desde Medellín
+            "MedellínBogotá": 75,         // 1h 15m
+            "MedellínCali": 55,           // 55m
+            "MedellínBarranquilla": 65,   // 1h 05m
+            "MedellínCartagena": 70,      // 1h 10m
+            "MedellínBucaramanga": 60,    // 1h
+            "MedellínPereira": 40,        // 40m
+            "MedellínSanta Marta": 75,    // 1h 15m
+            "MedellínCúcuta": 80,         // 1h 20m
+            "MedellínPasto": 85,          // 1h 25m
+            "MedellínMonteríaa": 45,      // 45m
+            "MedellínArmenia": 45,        // 45m
+            "MedellínManizales": 40,      // 40m
             
-            let operatorHTML = '';
-            if (flight.operator) {
-                operatorHTML = `
-                <div class="operator">
-                    <span>Operado por</span> <br>
-                    <span class="operator-name">${flight.operator}</span>
-                </div>`;
-            }
+            // Desde Cali
+            "CaliBogotá": 70,             // 1h 10m
+            "CaliMedellín": 55,           // 55m
+            "CaliBarranquilla": 75,       // 1h 15m
+            "CaliCartagena": 80,          // 1h 20m
+            "CaliBucaramanga": 85,        // 1h 25m
+            "CaliPereira": 50,            // 50m
+            "CaliPasto": 45,              // 45m
+            "CaliNeiva": 40,              // 40m
+            "CaliArmenia": 45,            // 45m
             
-            const price = currentCurrency === 'CLP' ? 
-                `<span class="currency">CLP</span><span class="amount">${flight.priceCLP.toLocaleString()}</span>` : 
-                `<span class="currency">USD</span><span class="amount">${flight.priceUSD}</span>`;
+            // Desde Barranquilla
+            "BarranquillaBogotá": 85,     // 1h 25m
+            "BarranquillaMedellín": 65,   // 1h 05m
+            "BarranquillaCali": 75,       // 1h 15m
+            "BarranquillaCartagena": 40,  // 40m
+            "BarranquillaBucaramanga": 70, // 1h 10m
+            "BarranquillaSanta Marta": 40, // 40m
+            "BarranquillaCúcuta": 75,     // 1h 15m
+            "BarranquillaMonteríaa": 50,  // 50m
             
-            card.innerHTML = `
-                <div class="flight-times">
-                    <div class="time">
-                        <span style="font-weight: bold; font-size: 1.2rem;">${formatTime(flight.departureTime)}</span>
-                    </div>
+            // Desde Cartagena
+            "CartagenaBogotá": 80,        // 1h 20m
+            "CartagenaMedellín": 70,      // 1h 10m
+            "CartagenaCali": 80,          // 1h 20m
+            "CartagenaBarranquilla": 40,  // 40m
+            "CartagenaSanta Marta": 40,   // 40m
+            "CartagenaMonteríaa": 45,     // 45m
             
-                    <section style="display: flex; flex-direction: column; justify-content: center;">
-                        <div class="duration">
-                            <span class="direct">Directo</span>
-                            <span class="time">${formatDuration(flight.duration)}</span>
-                        </div>
-                        <div style="border-style:dashed; border-width: 1px 0px; width: 100%; margin-top: 4%; border-color: #888;"></div>
-                    </section>
+            // Otras rutas importantes
+            "BucaramangaBogotá": 60,      // 1h
+            "BucaramangaMedellín": 60,    // 1h
+            "BucaramangaCali": 85,        // 1h 25m
+            "BucaramangaBarranquilla": 70, // 1h 10m
+            "BucaramangaCúcuta": 40,      // 40m
             
-                    <div class="time">
-                        <span style="font-weight: bold; font-size: 1.2rem;">${formatTime(flight.arrivalTime)}</span>
-                    </div>
+            "PereiraBogotá": 55,          // 55m
+            "PereiraMedellín": 40,        // 40m
+            "PereiraCali": 50,            // 50m
+            "PereiraArmenia": 40,         // 40m
+            "PereiraManizales": 40,       // 40m
+            
+            "Santa MartaBogotá": 90,      // 1h 30m
+            "Santa MartaBarranquilla": 40, // 40m
+            "Santa MartaCartagena": 40,   // 40m
+            "Santa MartaMedellín": 75,    // 1h 15m
+            
+            "CúcutaBogotá": 65,           // 1h 05m
+            "CúcutaBucaramanga": 40,      // 40m
+            "CúcutaBarranquilla": 75,     // 1h 15m
+            "CúcutaMedellín": 80,         // 1h 20m
+            
+            "ArmeniaBogotá": 50,          // 50m
+            "ArmeniaPereira": 40,         // 40m
+            "ArmeniaCali": 45,            // 45m
+            "ArmeniaMedellín": 45,        // 45m
+            
+            "ManizalesBogotá": 55,        // 55m
+            "ManizalesPereira": 40,       // 40m
+            "ManizalesMedellín": 40,      // 40m
+            
+            "default": 75                 // Por defecto 1h 15m
+        };
+        
+        // Determinar duración del vuelo según origen y destino
+        const rutaClave = `${origen}${destino}`;
+        const duracionMinutos = duracionesRutas[rutaClave] || duracionesRutas.default;
+        
+        // Obtener hora actual y añadir 40 minutos
+        const ahora = new Date();
+        const primeraHoraSalida = new Date(ahora);
+        primeraHoraSalida.setMinutes(ahora.getMinutes() + 40);
+        
+        // Datos de vuelos con precios en pesos colombianos (COP) entre 49,999 y 55,000
+        const vuelos = [
+            { precio: 49999, operador: null },
+            { precio: 51500, operador: null },
+            { precio: 54900, operador: null },
+            { precio: 52900, operador: null },
+            { precio: 50500, operador: null },
+            { precio: 53700, operador: null },
+            { precio: 55000, operador: "img/clic.svg" },
+            { precio: 51900, operador: null }
+        ];
+        
+        // Contenedor para las tarjetas de vuelo
+        const container = document.getElementById("flightCardsContainer");
+        container.innerHTML = '';
+        
+        // Crear tarjetas de vuelo con horarios actualizados
+        for (let i = 0; i < vuelos.length; i++) {
+            // Calcular hora de salida (primera hora + i horas)
+            const horaSalida = new Date(primeraHoraSalida);
+            horaSalida.setHours(horaSalida.getHours() + i);
+            
+            // Calcular hora de llegada (hora salida + duración)
+            const horaLlegada = new Date(horaSalida);
+            horaLlegada.setMinutes(horaLlegada.getMinutes() + duracionMinutos);
+            
+            // Formatear horas para mostrar
+            const horaSalidaStr = formatearHora(horaSalida);
+            const horaLlegadaStr = formatearHora(horaLlegada);
+            const duracionStr = formatearDuracion(duracionMinutos);
+            
+            // Crear tarjeta
+            const vuelo = vuelos[i];
+            const card = crearTarjetaVuelo(horaSalidaStr, horaLlegadaStr, duracionStr, vuelo.precio, vuelo.operador);
+            container.appendChild(card);
+        }
+    }
+    
+    function formatearHora(fecha) {
+        // Convertir a formato de 12 horas con AM/PM
+        let horas = fecha.getHours();
+        const minutos = fecha.getMinutes().toString().padStart(2, '0');
+        const ampm = horas >= 12 ? 'PM' : 'AM';
+        
+        // Convertir a formato de 12 horas (1-12)
+        horas = horas % 12;
+        horas = horas ? horas : 12; // La hora '0' debe ser '12' en formato 12 horas
+        
+        return `${horas}:${minutos} ${ampm}`;
+    }
+    
+    function formatearDuracion(minutos) {
+        const horas = Math.floor(minutos / 60);
+        const mins = minutos % 60;
+        return `${horas}h ${mins}m`;
+    }
+    
+    function crearTarjetaVuelo(horaSalida, horaLlegada, duracion, precio, operador) {
+        const card = document.createElement('div');
+        card.className = 'flight-card';
+        card.style.boxShadow = '0 4px 8px rgba(0.1, 0.1, 0.1, 0.1)';
+        card.style.cursor = 'pointer';
+        card.onclick = function() { window.location.href='tarifa2.html'; };
+        
+        let operadorHTML = '';
+        if (operador) {
+            operadorHTML = `
+            <div class="operator">
+                <span>Operado por</span> <br>
+                <img src="${operador}" alt="">
+            </div>`;
+        }
+
+        const precioFormateado = formatearPrecioCOP(precio);
+        
+        card.innerHTML = `
+            <div class="flight-times">
+                <div class="time">
+                    <span style="font-weight: bold; font-size: 1.2rem;">${horaSalida}</span>  
                 </div>
-                
-                ${operatorHTML}
-            
-                <div class="price">
-                    <span>Desde</span>
+        
+                <section style="display: flex; flex-direction: column; justify-content: center;">
+                    <div class="duration">
+                        <span class="direct">Directo</span>
+                        <span class="time">${duracion}</span>
+                    </div>
+                    <div style="border-style:dashed; border-width: 1px 0px; width: 100%; margin-top: 4%; border-color: #888;"></div>
+                </section>
+        
+                <div class="time">
+                    <span style="font-weight: bold; font-size: 1.2rem;">${horaLlegada}</span>
                 </div>
+            </div>
             
-                <div class="price-display">
-                    ${price}
-                </div>`;
-                
-            return card;
-        }
+            ${operadorHTML}
         
-        function toggleCurrency() {
-            currentCurrency = currentCurrency === 'CLP' ? 'USD' : 'CLP';
-            document.getElementById('currencyIndicator').textContent = currentCurrency === 'CLP' ? 'CLP/USD' : 'USD/CLP';
-            
-            // Refresh display with new currency for both tabs
-            displayFlights('ida');
-            displayFlights('vuelta');
-        }
+            <div class="price" style="margin: 0;">
+                <span>Desde</span>
+            </div>
         
-        function sortFlights(method, tripType) {
-            // Update active button for the current tab
-            const buttons = document.querySelectorAll(`#${tripType}-section .sort-button`);
-            buttons.forEach(btn => {
-                btn.classList.remove('active');
-            });
-            const currentButton = document.querySelector(`#${tripType}-section .sort-button[onclick="sortFlights('${method}', '${tripType}')"]`);
-            if (currentButton) {
-                currentButton.classList.add('active');
-            }
+            <div class="cop-price">
+                <span class="cop-symbol">$</span>
+                <span class="cop-amount">${precioFormateado}</span>
+                <span class="cop-symbol">COP</span>
+            </div>`;
             
-            // Set current sort method for the trip type
-            if (tripType === 'ida') {
-                currentIdaSortMethod = method;
-            } else {
-                currentVueltaSortMethod = method;
-            }
-            
-            // Get correct flight array
-            const flights = tripType === 'ida' ? idaFlights : vueltaFlights;
-            
-            // Sort flights based on selected method
-            switch(method) {
-                case 'time':
-                    flights.sort((a, b) => a.departureTime - b.departureTime);
-                    break;
-                case 'duration':
-                    flights.sort((a, b) => a.duration - b.duration);
-                    break;
-                case 'price':
-                    flights.sort((a, b) => a.priceCLP - b.priceCLP);
-                    break;
-            }
-            
-            displayFlights(tripType);
-        }
-        
-        function displayFlights(tripType) {
-            const container = document.getElementById(`${tripType}FlightCardsContainer`);
-            container.innerHTML = '';
-            
-            // Get correct flight array
-            const flights = tripType === 'ida' ? idaFlights : vueltaFlights;
-            
-            // Display sorted flights
-            flights.forEach(flight => {
-                const card = createFlightCard(flight, tripType);
-                container.appendChild(card);
-            });
-        }
-        
-        function switchTab(tabName) {
-            // Update tab buttons
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
-            
-            // Hide all tab content
-            document.querySelectorAll('.trip-type').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            // Show selected tab content
-            document.getElementById(`${tabName}-section`).classList.add('active');
-            document.getElementById(`promo-${tabName}`).classList.add('active');
-        }
-    </script>
+        return card;
+    }
+</script>
 </body>
 </html>
